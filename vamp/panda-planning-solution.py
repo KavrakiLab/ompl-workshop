@@ -1,11 +1,10 @@
 import time
-from pathlib import Path
 from typing import Any, Sequence
 
 import rerun as rr
+import vis
 from ompl import base as ob
 from ompl import geometric as og
-from ompl import tools as ot
 
 import vamp
 
@@ -32,11 +31,11 @@ DIMENSION = 7
 Q_START = [0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785]
 Q_END = [2.35, 1.0, 0.0, -0.8, 0, 2.5, 0.785]
 
-vamp.panda.joint_names
-
 
 def main():
-
+    """
+    Construct a plan for a Panda in a static environment and visualize the plan.
+    """
     env = make_environment(SPHERES)
 
     # Use VAMP's robot module to initialize state space and validations
@@ -44,15 +43,12 @@ def main():
     space = VampStateSpace(robot=robot)
     si = ob.SpaceInformation(space)
 
-    motion_validator = VampMotionValidator(si=si, env=env, robot=robot)
-    state_validity_checker = VampStateValidityChecker(si=si, env=env, robot=robot)
-
     # Select a planner
     planner = og.RRTConnect(si)
 
     # Set validators
-    si.setMotionValidator(motion_validator)
-    si.setStateValidityChecker(state_validity_checker)
+    si.setMotionValidator(VampMotionValidator(si=si, env=env, robot=robot))
+    si.setStateValidityChecker(VampStateValidityChecker(si=si, env=env, robot=robot))
 
     # Build SimpleSetup object
     ss = og.SimpleSetup(si)
@@ -80,12 +76,12 @@ def main():
     rec = rr.RecordingStream("ompl-vamp-demo")
     rec.set_time("frame_idx", sequence=0)
     rec.spawn()
-    log_environment(rec, "spheres", SPHERES)
-    log_traj(rec, path)
+    vis.log_environment(rec, "spheres", SPHERES)
+    vis.log_traj(rec, path)
 
 
 class VampMotionValidator(ob.MotionValidator):
-    """Motion validator using VAMP collision checking"""
+    """A state validity checker for a VAMP robot's configuration."""
 
     robot: Any
     env: vamp.Environment
@@ -104,6 +100,8 @@ class VampMotionValidator(ob.MotionValidator):
 
 
 class VampStateValidityChecker(ob.StateValidityChecker):
+    """A state validity checker for a VAMP robot's configuration."""
+
     robot: Any
     env: vamp.Environment
 
@@ -113,11 +111,14 @@ class VampStateValidityChecker(ob.StateValidityChecker):
         self.robot = robot
 
     def isValid(self, s: ob.RealVectorStateType) -> bool:
-        return self.robot.validate(s[0 : self.robot.dimension()], self.env)
+        return self.robot.validate(s[: self.robot.dimension()], self.env)
 
 
 class VampStateSpace(ob.RealVectorStateSpace):
-    """State Space class using VAMP's robot methods"""
+    """A real-valued state space for a given VAMP robot."""
+
+    robot: Any
+    dimension: int
 
     def __init__(self, robot: Any):
         super().__init__(robot.dimension())
@@ -133,13 +134,6 @@ class VampStateSpace(ob.RealVectorStateSpace):
         self.setBounds(bounds)
 
 
-def validate_panda_state(s: ob.RealVectorStateType, env: vamp.Environment) -> bool:
-    """
-    Determine whether a Panda configuration in environment `env` is valid.
-    """
-    return vamp.panda.validate(s[0:DIMENSION], env)
-
-
 def make_environment(spheres: Sequence[vamp.Sphere]) -> vamp.Environment:
     """
     Construct the collision-checking environment for this problem.
@@ -148,61 +142,6 @@ def make_environment(spheres: Sequence[vamp.Sphere]) -> vamp.Environment:
     for sphere in spheres:
         env.add_sphere(sphere)
     return env
-
-
-def log_environment(rec: rr.RecordingStream, path: str, spheres: Sequence[vamp.Sphere]):
-    """
-    Log the collision-checking environment from this demo.
-    """
-    rec.log(
-        path,
-        rr.Ellipsoids3D(
-            centers=[s.position for s in spheres],
-            half_sizes=[[s.r] * 3 for s in spheres],
-            colors=[[255, 255, 0]] * len(spheres),
-            fill_mode=rr.components.FillMode.Solid,
-        ),
-    )
-    # hack to make coordinate frames make sense
-    rec.log(
-        "transforms",
-        rr.Transform3D(parent_frame="world", child_frame=f"tf#/{path}"),
-        static=True,
-    )
-
-
-def log_traj(rec: rr.RecordingStream, traj: og.PathGeometric):
-
-    # `log_file_from_path` automatically uses the built-in URDF data-loader.
-    urdf_path = Path(__file__).parent / "panda/panda.urdf"
-    rec.log_file_from_path(urdf_path, static=True)
-    # Load the URDF tree structure into memory
-    urdf_tree = rr.urdf.UrdfTree.from_file_path(urdf_path)
-
-    # The `flush` call is optional, but it helps with logging consistency,
-    # because it ensures that the URDF finishes loading before continuing.
-    rec.flush()
-
-    traj.interpolate(traj.getStateCount() * 15)
-    i = 0
-    print(vamp.panda.joint_names())
-    for q in traj.getStates():
-        for theta, joint_name in zip(q, vamp.panda.joint_names()):
-            # Animate joints by logging transforms
-            for joint in urdf_tree.joints():
-                if joint.name == joint_name:
-                    # compute_transform gives you a complete transform that is ready to log,
-                    # calculated from joint origin and the current angle and with the frame names set.
-                    transform = joint.compute_transform(theta)
-                    rec.set_time("frame_idx", sequence=i)
-                    rec.log("transforms", transform)
-        i += 1
-
-    rec.log(
-        "transforms",
-        rr.Transform3D(parent_frame="world", child_frame="panda_link0"),
-        static=True,
-    )
 
 
 if __name__ == "__main__":
