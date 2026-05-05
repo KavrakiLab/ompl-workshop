@@ -1,0 +1,50 @@
+--- plan2d_2d.py	2026-05-03 21:57:07.622268741 -0500
++++ plan2d_se2.py	2026-05-03 22:01:48.719834793 -0500
+@@ -64,7 +64,7 @@
+ # Validity checker
+ # ----------------------------
+ def is_valid(map_obj, state):
+-    return map_obj.is_free(state[0], state[1])
++    return map_obj.is_free(state.getX(), state.getY())
+ 
+ 
+ # ----------------------------
+@@ -72,7 +72,7 @@
+ # ----------------------------
+ def plan(img_env, start, goal):
+     # State space
+-    space = ob.RealVectorStateSpace(2)
++    space = ob.SE2StateSpace()
+ 
+     bounds = ob.RealVectorBounds(2)
+     bounds.setLow(0)
+@@ -90,12 +90,14 @@
+ 
+     # Start / goal
+     start_state = space.allocState()
+-    start_state[0] = start[0]
+-    start_state[1] = start[1]
++    start_state.setX(start[0])
++    start_state.setY(start[1])
++    start_state.setYaw(start[2])
+ 
+     goal_state = space.allocState()
+-    goal_state[0] = goal[0]
+-    goal_state[1] = goal[1]
++    goal_state.setX(goal[0])
++    goal_state.setY(goal[1])
++    goal_state.setYaw(goal[2])
+ 
+     # Problem
+     pdef = ob.ProblemDefinition(si)
+@@ -119,8 +121,8 @@
+     xs, ys = [], []
+     for i in range(path.getStateCount()):
+         s = path.getState(i)
+-        xs.append(s[0])
+-        ys.append(s[1])
++        xs.append(s.getX())
++        ys.append(s.getY())
+ 
+     return (xs, ys)
+ 

@@ -1,0 +1,69 @@
+--- plan2d_se2.py	2026-05-03 22:01:48.719834793 -0500
++++ plan2d_optim.py	2026-05-03 23:48:36.443805905 -0500
+@@ -68,6 +68,54 @@
+ 
+ 
+ # ----------------------------
++# Custom optimization objective
++# ----------------------------
++class ProximityObjective(ob.OptimizationObjective):
++    """
++    Penalizes states by the number of obstacle pixels within a square
++    neighborhood of the given radius, pushing the planner away from obstacles.
++    """
++
++    def __init__(self, si, img_env, radius=10, weight=0.1):
++        super().__init__(si)
++        self.img_env = img_env
++        self.radius = int(radius)
++        self.weight = weight
++        self.description = "Obstacle Proximity"
++
++    def stateCost(self, state):
++        x, y = state.getX(), state.getY()
++        px, py = int(x), int(y)
++        r = self.radius
++        occ = self.img_env.occ
++        h, w = occ.shape
++        x_min = max(0, px - r)
++        x_max = min(w, px + r + 1)
++        y_min = max(0, py - r)
++        y_max = min(h, py + r + 1)
++        count = int(np.sum(occ[y_min:y_max, x_min:x_max]))
++        return ob.Cost(self.weight * count)
++
++    def motionCost(self, s1, s2):
++        N = 10
++        total = 0.0
++        ss = self.getSpaceInformation().getStateSpace()
++        state = self.getSpaceInformation().allocState()
++        for i in range(N):
++            ss.interpolate(s1, s2, i / (N - 1), state)
++            total += self.stateCost(state).value()
++        #self.getSpaceInformation().freeState(state)
++        return ob.Cost(total)
++
++
++def get_objective(si, img_env, radius=10, weight=0.1):
++    opt = ob.MultiOptimizationObjective(si)
++    opt.addObjective(ob.PathLengthOptimizationObjective(si), 1.0)
++    opt.addObjective(ProximityObjective(si, img_env, radius, weight), 1.0)
++    return opt
++
++
++# ----------------------------
+ # Planning
+ # ----------------------------
+ def plan(img_env, start, goal):
+@@ -102,9 +150,10 @@
+     # Problem
+     pdef = ob.ProblemDefinition(si)
+     pdef.setStartAndGoalStates(start_state, goal_state)
++    pdef.setOptimizationObjective(get_objective(si, img_env))
+ 
+     # Planner
+-    planner = og.RRTConnect(si)
++    planner = og.RRTstar(si)
+     planner.setProblemDefinition(pdef)
+     planner.setup()
+ 

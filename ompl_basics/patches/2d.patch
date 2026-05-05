@@ -1,0 +1,75 @@
+--- plan2d_starter.py	2026-05-04 00:00:13.769762362 -0500
++++ plan2d_2d.py	2026-05-03 21:57:07.622268741 -0500
+@@ -61,13 +61,68 @@
+ 
+ 
+ # ----------------------------
++# Validity checker
++# ----------------------------
++def is_valid(map_obj, state):
++    return map_obj.is_free(state[0], state[1])
++
++
++# ----------------------------
+ # Planning
+ # ----------------------------
+ def plan(img_env, start, goal):
+-    # TODO Return path
+-    # xs, ys = ..., ...
+-    # return (xs, ys)
+-    return None
++    # State space
++    space = ob.RealVectorStateSpace(2)
++
++    bounds = ob.RealVectorBounds(2)
++    bounds.setLow(0)
++    bounds.setHigh(0, img_env.width)
++    bounds.setHigh(1, img_env.height)
++    space.setBounds(bounds)
++
++    # Space information
++    si = ob.SpaceInformation(space)
++    si.setStateValidityChecker(
++        partial(is_valid, img_env)
++    )
++    si.setStateValidityCheckingResolution(0.002)
++    si.setup()
++
++    # Start / goal
++    start_state = space.allocState()
++    start_state[0] = start[0]
++    start_state[1] = start[1]
++
++    goal_state = space.allocState()
++    goal_state[0] = goal[0]
++    goal_state[1] = goal[1]
++
++    # Problem
++    pdef = ob.ProblemDefinition(si)
++    pdef.setStartAndGoalStates(start_state, goal_state)
++
++    # Planner
++    planner = og.RRTConnect(si)
++    planner.setProblemDefinition(pdef)
++    planner.setup()
++
++    solved = planner.solve(2.0)
++
++    if not solved:
++        print("No solution found")
++        return None
++
++    path = pdef.getSolutionPath()
++    path.interpolate()
++
++    # Extract path
++    xs, ys = [], []
++    for i in range(path.getStateCount()):
++        s = path.getState(i)
++        xs.append(s[0])
++        ys.append(s[1])
++
++    return (xs, ys)
+ 
+ 
+ if __name__ == "__main__":
