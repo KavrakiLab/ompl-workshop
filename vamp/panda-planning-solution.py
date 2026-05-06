@@ -1,4 +1,5 @@
 import time
+import types
 from typing import Any, Sequence
 
 import rerun as rr
@@ -83,10 +84,10 @@ def main():
 class VampMotionValidator(ob.MotionValidator):
     """A state validity checker for a VAMP robot's configuration."""
 
-    robot: Any
+    robot: types.ModuleType
     env: vamp.Environment
 
-    def __init__(self, si: ob.SpaceInformation, env: vamp.Environment, robot: Any):
+    def __init__(self, si: ob.SpaceInformation, env: vamp.Environment, robot: types.ModuleType):
         super().__init__(si)
         self.env = env
         self.robot = robot
@@ -102,10 +103,10 @@ class VampMotionValidator(ob.MotionValidator):
 class VampStateValidityChecker(ob.StateValidityChecker):
     """A state validity checker for a VAMP robot's configuration."""
 
-    robot: Any
+    robot: types.ModuleType
     env: vamp.Environment
 
-    def __init__(self, si: ob.SpaceInformation, env: vamp.Environment, robot: Any):
+    def __init__(self, si: ob.SpaceInformation, env: vamp.Environment, robot: types.ModuleType):
         super().__init__(si)
         self.env = env
         self.robot = robot
@@ -117,10 +118,10 @@ class VampStateValidityChecker(ob.StateValidityChecker):
 class VampStateSpace(ob.RealVectorStateSpace):
     """A real-valued state space for a given VAMP robot."""
 
-    robot: Any
+    robot: types.ModuleType
     dimension: int
 
-    def __init__(self, robot: Any):
+    def __init__(self, robot: types.ModuleType):
         super().__init__(robot.dimension())
         self.robot = robot
         self.dimension = robot.dimension()
