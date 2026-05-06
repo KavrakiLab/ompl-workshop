@@ -17,6 +17,7 @@ To handle all the boilerplate of bounds-checking, we've provided a `VampStateSpa
 To get started, **run the example planning problem by executing `panda-planning.py`**:
 
 ```sh
+cd vamp
 python3 ./panda-planning.py
 ```
 
@@ -66,7 +67,7 @@ class VampStateValidityChecker(ob.StateValidityChecker):
 ```
 
 Once you have implemented the validators, we now need to register the validators with the SpaceInformation `si` so that the planner can use them.
-To do so, in the `main` function, **construct a `VampMotionValidator` and a `VampStateValidityChecker`, then register them with `si.setMotionValidator()` and `si.setStateValidityChecker` respectively.**
+To do so, in the `main` function, **construct a VAMP environment using the provided make_environment method. Next, construct a `VampMotionValidator` and a `VampStateValidityChecker`, then register them with `si.setMotionValidator()` and `si.setStateValidityChecker` respectively.**
 
 ### Check your work
 

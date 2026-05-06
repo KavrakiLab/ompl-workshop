@@ -14,17 +14,24 @@ Avoid ICRA 2026 `ompl_basics`
 
 **Prerequisites:** Python version between 3.10 to 3.13, pip
 
-**1. Create and source a virtual environment 
+**1. Clone this repository
+
+```bash
+git clone https://github.com/KavrakiLab/ompl-workshop.git
+cd ompl-workshop
+```
+
+**2. Create and source a virtual environment 
 
 ```bash
 python -m venv env
 source env/bin/activate
 ```
 
-**2. Install dependencies
+**3. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ---
@@ -57,6 +64,7 @@ The `patches` directory contains the changes needed to reach each checkpoint in 
 **1. Apply 2D planning patch
 
 ```bash
+cd ompl_basics
 patch plan2d.py < patches/2d.patch
 python plan2d.py 
 ```

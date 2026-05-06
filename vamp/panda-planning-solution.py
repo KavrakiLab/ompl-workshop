@@ -36,7 +36,6 @@ def main():
     """
     Construct a plan for a Panda in a static environment and visualize the plan.
     """
-    env = make_environment(SPHERES)
 
     # Use VAMP's robot module to initialize state space and validations
     robot = vamp.panda
@@ -46,7 +45,8 @@ def main():
     # Select a planner
     planner = og.RRTConnect(si)
 
-    # Set validators
+    # Make VAMP environment and set validators
+    env = make_environment(SPHERES)
     si.setMotionValidator(VampMotionValidator(si=si, env=env, robot=robot))
     si.setStateValidityChecker(VampStateValidityChecker(si=si, env=env, robot=robot))
 

@@ -47,7 +47,9 @@ def main():
     planner = og.RRTConnect(si)
 
     """
-    TODO: overwrite `si`'s state validity checkers with your motion and state validity checker implementations.
+    TODO: Construct a VAMP environment using the provided make_environment method.
+    Overwrite `si`'s state validity checkers with your motion and state validity 
+    checker implementations.
     """
 
     # Build SimpleSetup object
