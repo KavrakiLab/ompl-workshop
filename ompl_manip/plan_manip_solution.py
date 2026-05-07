@@ -250,7 +250,7 @@ def main():
         rec.set_time("frame_idx", sequence=0)
         rec.spawn()
         vis.log_obstacles(rec, obstacles)
-        vis.log_path(rec, path, kinematics, DIMENSION)
+        vis.log_path(rec, path, DIMENSION)
     else:
         print("No solution found within time limit")
 
