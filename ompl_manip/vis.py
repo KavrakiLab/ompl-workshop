@@ -18,8 +18,6 @@ _ARM_JOINT_NAMES = [
     "panda_joint7",
 ]
 
-# rerun Capsules3D are Y-aligned; scene cylinders are Z-aligned in their local frame.
-_R_Z_TO_Y = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]])
 
 
 def _rr_quat(R):
@@ -45,7 +43,7 @@ def log_obstacles(rec: rr.RecordingStream, obstacles):
             cap_translations.append(t)
             cap_lengths.append(geom.halfLength * 2)
             cap_radii.append(geom.radius)
-            cap_quats.append(_rr_quat(R @ _R_Z_TO_Y))
+            cap_quats.append(_rr_quat(R))
         elif isinstance(geom, coal.Sphere):
             sph_centers.append(t)
             sph_radii.append(geom.radius)
@@ -58,8 +56,8 @@ def log_obstacles(rec: rr.RecordingStream, obstacles):
         ), static=True)
         rec.log("transforms", rr.Transform3D(parent_frame="world", child_frame="tf#/obstacles/boxes"), static=True)
     if cap_translations:
-        rec.log("obstacles/cylinders", rr.Capsules3D(
-            translations=np.array(cap_translations),
+        rec.log("obstacles/cylinders", rr.Cylinders3D(
+            centers=np.array(cap_translations),
             lengths=np.array(cap_lengths),
             radii=np.array(cap_radii),
             quaternions=cap_quats,

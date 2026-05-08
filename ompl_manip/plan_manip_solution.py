@@ -22,8 +22,8 @@ from ompl import geometric as og
 
 HERE = os.path.dirname(__file__)
 URDF_PATH = os.path.join(HERE, "../panda/panda_spherized.urdf")
-SCENE_PATH = os.path.join(HERE, "../problems/box_panda/scene0001.yaml")
-REQUEST_PATH = os.path.join(HERE, "../problems/box_panda/request0001.yaml")
+SCENE_PATH = os.path.join(HERE, "../problems/bookshelf_tall_panda/scene0001.yaml")
+REQUEST_PATH = os.path.join(HERE, "../problems/bookshelf_tall_panda/request0001.yaml")
 
 ARM_JOINT_NAMES = [
     "panda_joint1",
