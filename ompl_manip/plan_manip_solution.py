@@ -78,9 +78,9 @@ def build_scene_obstacles(scene_yaml_path):
             ptype = prim["type"]
             dims = prim["dimensions"]
             if ptype == "box":
-                geom = coal.Box(dims[0] / 2, dims[1] / 2, dims[2] / 2)
+                geom = coal.Box(dims[0], dims[1], dims[2])
             elif ptype == "cylinder":
-                geom = coal.Cylinder(dims[1], dims[0] / 2)
+                geom = coal.Cylinder(dims[1], dims[0])
             elif ptype == "sphere":
                 geom = coal.Sphere(dims[0])
             else:
