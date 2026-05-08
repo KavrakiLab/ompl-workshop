@@ -52,7 +52,7 @@ This mounts the current directory into the container, so you can edit files with
 ---
 
 ## For testers
-### Task 1 - Plan around ICRA logo
+### Task 0 - Plan around ICRA logo (abandoned, to be removed from final)
 The `patches` directory contains the changes needed to reach each checkpoint in the tutorial. We start we an empty plan function and a TODO and gradually add OMPL features. Run everything at `ompl_basics` as current directory (I'll convert the instructions to ompl-workshop as cwd soon)
 **1. Apply 2D planning patch
 
@@ -78,3 +78,13 @@ python plan2d.py
 ```
 Code should be able to plan short paths, that also try to stay clear of obstacles
 
+### Task 1 - Manipulator planning in MBM environments
+Run solution:
+```bash
+python ompl_manip/plan_manip_solution.py
+```
+Rerun should show a valid robot trajectory
+
+You can try different environments and start/end goals by changing the `SCENE_PATH` and `REQUEST_PATH` at the top of `ompl_manip/plan_manip_solution.py`
+
+Starter code and patch coming soon
