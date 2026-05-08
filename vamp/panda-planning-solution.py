@@ -13,14 +13,12 @@ SPHERE_CENTERS = [
     [0.35, 0.35, 0.25],
     [0, 0.55, 0.25],
     [-0.55, 0, 0.25],
-    [-0.35, -0.35, 0.25],
     [0, -0.55, 0.25],
     [0.35, -0.35, 0.25],
     [0.35, 0.35, 0.8],
     [0, 0.55, 0.8],
     [-0.35, 0.35, 0.8],
     [-0.55, 0, 0.8],
-    [-0.35, -0.35, 0.8],
     [0, -0.55, 0.8],
     [0.35, -0.35, 0.8],
 ]
@@ -76,7 +74,7 @@ def main():
     rec = rr.RecordingStream("ompl-vamp-demo")
     rec.set_time("frame_idx", sequence=0)
     rec.spawn()
-    vis.log_environment(rec, "spheres", SPHERES)
+    vis.log_environment(rec, "env", env)
     vis.log_traj(rec, path)
 
 
@@ -141,6 +139,21 @@ def make_environment(spheres: Sequence[vamp.Sphere]) -> vamp.Environment:
     env = vamp.Environment()
     for sphere in spheres:
         env.add_sphere(sphere)
+    env.add_capsule(
+        vamp.Cylinder(
+            [-0.35, -0.35, -0.2],  # start point
+            [0.0, 0.0, 1.0],  # vector in direction of cylinder facing
+            0.2,  # radius
+            0.8,  # length
+        )
+    )
+    env.add_cuboid(
+        vamp.Cuboid(
+            [0.0, 1.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [0.1, 0.2, 0.3],
+        )
+    )
     return env
 
 

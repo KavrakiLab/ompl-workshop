@@ -1,24 +1,95 @@
+import math
 from pathlib import Path
 from typing import Sequence
 
+import pinocchio as pin
 import rerun as rr
 from ompl import geometric as og
 
 import vamp
 
 
-def log_environment(rec: rr.RecordingStream, path: str, spheres: Sequence[vamp.Sphere]):
+def log_environment(rec: rr.RecordingStream, path: str, env: vamp.Environment):
     """
     Log the collision-checking environment from this demo.
     """
     rec.log(
-        path,
+        f"{path}/spheres",
         rr.Ellipsoids3D(
-            centers=[s.position for s in spheres],
-            half_sizes=[[s.r] * 3 for s in spheres],
-            colors=[[255, 255, 0]] * len(spheres),
+            centers=[s.position for s in env.spheres],
+            half_sizes=[[s.r] * 3 for s in env.spheres],
+            colors=[[253, 253, 150]] * len(env.spheres),
             fill_mode=rr.components.FillMode.Solid,
         ),
+        static=True,
+    )
+    rec.log(
+        f"{path}/cuboids",
+        rr.Boxes3D(
+            centers=[[c.x, c.y, c.z] for c in env.cuboids],
+            half_sizes=[[c.axis_1_r, c.axis_2_r, c.axis_3_r] for c in env.cuboids],
+            quaternions=[
+                quat_from_r(
+                    [
+                        [c.axis_1_x, c.axis_1_y, c.axis_1_z],
+                        [c.axis_2_x, c.axis_2_y, c.axis_2_z],
+                        [c.axis_3_x, c.axis_3_y, c.axis_3_z],
+                    ]
+                )
+                for c in env.cuboids
+            ],
+            colors=[[239, 167, 207]] * len(env.cuboids),
+            fill_mode=rr.components.FillMode.Solid,
+        ),
+        static=True,
+    )
+    rec.log(
+        f"{path}/z_cuboids",
+        rr.Boxes3D(
+            centers=[[c.x, c.y, c.z] for c in env.z_aligned_cuboids],
+            half_sizes=[
+                [c.axis_1_r, c.axis_2_r, c.axis_3_r] for c in env.z_aligned_cuboids
+            ],
+            quaternions=[
+                quat_from_r(
+                    [
+                        [c.axis_1_x, c.axis_1_y, c.axis_1_z],
+                        [c.axis_2_x, c.axis_2_y, c.axis_2_z],
+                        [c.axis_3_x, c.axis_3_y, c.axis_3_z],
+                    ]
+                )
+                for c in env.z_aligned_cuboids
+            ],
+            colors=[[246, 180, 201]] * len(env.z_aligned_cuboids),
+            fill_mode=rr.components.FillMode.Solid,
+        ),
+        static=True,
+    )
+    rec.log(
+        f"{path}/capsules",
+        rr.Capsules3D(
+            translations=[[c.x1, c.y1, c.z1] for c in env.capsules],
+            lengths=[1 / c.rdv for c in env.capsules],
+            quaternions=[capsule_quat([c.xv, c.yv, c.zv]) for c in env.capsules],
+            colors=[[255, 178, 111]] * len(env.capsules),
+            radii=[c.r for c in env.capsules],
+            fill_mode=rr.components.FillMode.Solid,
+        ),
+        static=True,
+    )
+    rec.log(
+        f"{path}/z_capsules",
+        rr.Capsules3D(
+            translations=[[c.x1, c.y1, c.z1] for c in env.z_aligned_capsules],
+            lengths=[1 / c.rdv for c in env.z_aligned_capsules],
+            quaternions=[
+                capsule_quat([c.xv, c.yv, c.zv]) for c in env.z_aligned_capsules
+            ],
+            colors=[[180, 210, 130]] * len(env.z_aligned_capsules),
+            radii=[c.r for c in env.z_aligned_capsules],
+            fill_mode=rr.components.FillMode.Solid,
+        ),
+        static=True,
     )
     # hack to make coordinate frames make sense
     rec.log(
@@ -60,3 +131,31 @@ def log_traj(rec: rr.RecordingStream, traj: og.PathGeometric):
         rr.Transform3D(parent_frame="world", child_frame="panda_link0"),
         static=True,
     )
+
+
+def quat_from_r(R) -> rr.Quaternion:
+    """
+    Convert a rotation matrix to a Rerun quaternion.
+    """
+    print(f"r={R}")
+
+    print("-------------")
+    [r11, r12, r13] = R[0]
+    [r21, r22, r23] = R[1]
+    [r31, r32, r33] = R[2]
+
+    # Calculate quaternion components
+    q0 = 0.5 * math.sqrt(1 + r11 + r22 + r33)
+    q1 = 0.5 * math.copysign(math.sqrt(1 + r11 - r22 - r33), r32 - r23)
+    q2 = 0.5 * math.copysign(math.sqrt(1 - r11 + r22 - r33), r13 - r31)
+    q3 = 0.5 * math.copysign(math.sqrt(1 - r11 - r22 + r33), r21 - r12)
+
+    return rr.Quaternion(xyzw=[q0, q1, q2, q3])
+
+
+def capsule_quat(v: Sequence[float]) -> rr.Quaternion:
+    print(f"v={v}")
+    norm = math.sqrt(sum(vi * vi for vi in v))
+    vhat = [vi / norm for vi in v]
+
+    return rr.Quaternion(xyzw=[-vhat[1], vhat[0], 0, vhat[2]])
