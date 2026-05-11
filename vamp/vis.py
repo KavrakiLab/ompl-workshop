@@ -176,8 +176,6 @@ def quat_from_r(R) -> rr.Quaternion:
     """
     Convert a rotation matrix to a Rerun quaternion.
     """
-    print(f"r={R}")
-    print("-------------")
     [r11, r12, r13] = R[0]
     [r21, r22, r23] = R[1]
     [r31, r32, r33] = R[2]
@@ -192,7 +190,6 @@ def quat_from_r(R) -> rr.Quaternion:
 
 
 def capsule_quat(v: Sequence[float]) -> rr.Quaternion:
-    print(v)
     norm = math.sqrt(sum(vi * vi for vi in v))
     v = [vi / norm for vi in v]
 
