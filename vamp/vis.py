@@ -93,26 +93,6 @@ def log_environment(rec: rr.RecordingStream, path: str, env: vamp.Environment):
         static=True,
     )
 
-    colliding = []
-    for _ in range(10000):
-        x = random.uniform(-2, 2)
-        y = random.uniform(-2, 2)
-        z = random.uniform(-2, 2)
-
-        if not vamp.sphere.validate([x, y, z], env):
-            colliding.append([x, y, z])
-
-    rec.log(
-        f"{path}/colliding",
-        rr.Ellipsoids3D(
-            centers=[s for s in colliding],
-            half_sizes=[[0.2] * 3] * len(colliding),
-            colors=[[253, 253, 150]] * len(colliding),
-            fill_mode=rr.components.FillMode.Solid,
-        ),
-        static=True,
-    )
-
     # hack to make coordinate frames make sense
     rec.log(
         "transforms",
