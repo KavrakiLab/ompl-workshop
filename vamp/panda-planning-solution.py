@@ -19,6 +19,7 @@ def main():
     """
     Construct a plan for a Panda in a static environment and visualize the plan.
     """
+    # Construct a VAMP environment
     env = make_environment()
     # env = mbm.load_scene("problems/bookshelf_tall_panda/scene0001.yaml")
 

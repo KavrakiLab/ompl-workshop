@@ -4,11 +4,7 @@ In this demonstration, we'll show you how to use sampling-based planners from th
 
 ## Installation
 
-To install all dependencies, you can simply install via `requirements.txt`.
-
-```sh
-pip install -r requirements.txt
-```
+Follow the installation instructions at the top level of this repository.
 
 ## Instructions
 
@@ -19,6 +15,7 @@ To handle all the boilerplate of bounds-checking, we've provided a `VampStateSpa
 To get started, **run the example planning problem by executing `panda-planning.py`**:
 
 ```sh
+cd vamp
 python3 ./panda-planning.py
 ```
 
