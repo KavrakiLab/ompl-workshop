@@ -12,7 +12,7 @@ Avoid ICRA 2026 `ompl_basics`
 
 ## Setup for Linux / macOS
 
-**Prerequisites:** Python version between 3.10 to 3.13, pip
+**Prerequisites:** Python version between 3.11 to 3.13, pip
 
 **1. Clone this repository
 

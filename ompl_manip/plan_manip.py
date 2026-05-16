@@ -225,29 +225,12 @@ def main():
 
     start_q, goal_q = load_request(REQUEST_PATH)
 
-    # 6-DOF joint space, all joints bounded to [-pi, pi]
-    space = ob.RealVectorStateSpace(DIMENSION)
-    bounds = ob.RealVectorBounds(DIMENSION)
-    for i in range(DIMENSION):
-        bounds.setLow(i, -np.pi)
-        bounds.setHigh(i, np.pi)
-    space.setBounds(bounds)
-
-    si = ob.SpaceInformation(space)
-    si.setStateValidityChecker(partial(robot_collides, kinematics, obstacles))
-    si.setStateValidityCheckingResolution(0.02)
-
-    start = si.allocState()
-    goal = si.allocState()
-    start[:DIMENSION] = start_q[:]
-    goal[:DIMENSION] = goal_q[:]
-
-    ss = og.SimpleSetup(si)
-    ss.setStartAndGoalStates(start, goal)
-    ss.setPlanner(og.RRTConnect(si))
-
-    print(f"Planning from {np.round(start_q, 3)} to {np.round(goal_q, 3)} ...")
-    result = ss.solve(30.0)
+    """
+    TODO: create and invoke an OMPL planner
+    Defines
+    PlannerStatus result
+    SimpleSetup ss (for obtaining the path)
+    """
 
     if result:
         path = ss.getSolutionPath()
