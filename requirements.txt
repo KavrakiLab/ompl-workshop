@@ -16,3 +16,4 @@ pin
 pyyaml
 rerun-sdk
 vamp-planner==0.6.4
+eigen

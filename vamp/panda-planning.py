@@ -1,6 +1,5 @@
 import time
 import types
-from typing import Any, Sequence
 
 import mbm
 import rerun as rr
@@ -19,6 +18,8 @@ def main():
     """
     Construct a plan for a Panda in a static environment and visualize the plan.
     """
+    # Construct a VAMP environment
+    env = make_environment()
 
     # Use VAMP's robot module to initialize state space and validations
     robot = vamp.panda
@@ -29,11 +30,9 @@ def main():
     planner = og.RRTConnect(si)
 
     """
-    TODO: Construct a VAMP environment using the provided make_environment method.
-        Overwrite `si`'s state validity checkers with your motion and state validity
-        checker implementations.
+    TODO: Overwrite `si`'s state validity checkers with your motion and state validity
+            checker implementations.
     """
-    env = make_environment()
 
     # Build SimpleSetup object
     ss = og.SimpleSetup(si)
