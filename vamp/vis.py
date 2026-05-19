@@ -199,7 +199,8 @@ def capsule_quat(v: Sequence[float]) -> rr.Quaternion:
     theta = -math.acos(v[2])
     rotvec = [-v[1] * theta, v[0] * theta, 0]
     rotation = scipy.spatial.transform.Rotation.from_rotvec(rotvec)
-    if rotvec == [0, 0, 0]:
+    if v[2] == -1:
+        # special case for 180 degree rotations
         rotation = scipy.spatial.transform.Rotation.from_euler(
             "xyz", [180, 0, 0], degrees=True
         )
