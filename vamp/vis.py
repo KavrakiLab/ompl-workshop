@@ -127,7 +127,7 @@ def log_environment(rec: rr.RecordingStream, path: str, env: vamp.Environment):
 def log_traj(rec: rr.RecordingStream, traj: og.PathGeometric):
 
     # `log_file_from_path` automatically uses the built-in URDF data-loader.
-    urdf_path = Path(__file__).parent / "panda/panda.urdf"
+    urdf_path = Path(__file__).parent.parent / "panda/panda.urdf"
     rec.log_file_from_path(urdf_path, static=True)
     # Load the URDF tree structure into memory
     urdf_tree = rr.urdf.UrdfTree.from_file_path(urdf_path)
