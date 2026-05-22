@@ -226,11 +226,12 @@ def main():
     start_q, goal_q = load_request(REQUEST_PATH)
 
     """
-    TODO: create and invoke an OMPL planner
-    Defines
-    PlannerStatus result
-    SimpleSetup ss (for obtaining the path)
+    TODO list for creating and invoking an OMPL planner
     """
+    # 1. Create state space
+    # 2. Create SpaceInformation and state validator
+    # 3. Create Planner and SimpleSetup
+    # 4. Run the planner
 
     if result:
         path = ss.getSolutionPath()
