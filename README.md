@@ -16,7 +16,7 @@ On MacOS
 brew install eigen
 ```
 
-### Note for WSL users
+### ⚠️ Note for WSL users
 The workshop uses [rerun](https://rerun.io/) for visualization. rerun is known to have some issues working out of the box on WSL, so it is recommended to test your rerun installation ahead of the tutorial and follow the instructions in [https://rerun.io/docs/getting-started/install-rerun/troubleshooting#running-on-wsl2-ubuntu](https://rerun.io/docs/getting-started/install-rerun/troubleshooting#running-on-wsl2-ubuntu).
 
 ## Setup
